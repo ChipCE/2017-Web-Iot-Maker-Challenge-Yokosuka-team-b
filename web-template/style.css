@@ -1,0 +1,60 @@
+.headerLogo
+{
+    position: absolute;
+    left: 25%;
+    width: 50%;
+
+    top: 40%;
+    margin-top: -25px; /* Half the height */
+    
+}
+
+.blur
+{
+    -webkit-filter: blur(5px);
+    -moz-filter: blur(5px);
+    -o-filter: blur(5px);
+    -ms-filter: blur(5px);
+    filter: blur(1px);
+}
+
+/* header image */
+#headerImage
+{
+    min-width: 100%;
+    width:100%;
+    min-height: 100%;
+    height:100vh;
+
+    background-image: url("bg-loop.png");
+    background-repeat: repeat;
+
+
+}
+
+#headerImage.hide
+{
+    height: 0px;
+}
+
+.fixTopMargin
+{
+    margin-top:70px;
+}
+
+#main-container
+{
+    min-height: 90%;
+    height:92vh;
+}
+
+#main-container .nav-pills > li > a {
+    border-radius: 4px 4px 0 0 ;
+  }
+  
+  #main-container .tab-content {
+    color : rgb(58, 58, 58);
+    background-color: #ffffff;
+    padding : 5px 15px;
+  }
+  
