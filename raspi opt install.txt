@@ -1,0 +1,43 @@
+update nodejs
+install
+bash <(curl -sL https://raw.githubusercontent.com/node-red/raspbian-deb-package/master/resources/update-nodejs-and-nodered)
+update
+update-nodejs-and-nodered
+rebuild
+cd ~/.node-red
+npm rebuild
+
+update kernel
+rpi-update
+
+revert
+sudo apt-get install --reinstall raspberrypi-bootloader raspberrypi-kernel
+
+
+apt-update
+apt-get dist-upgrade
+
+web server
+sudo apt-get install apache2 php libapache2-mod-php phpmyadmin
+
+mosquitto
+wget http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key
+sudo apt-key add mosquitto-repo.gpg.key
+cd /etc/apt/sources.list.d/
+sudo wget http://repo.mosquitto.org/debian/mosquitto-stretch.list
+sudo -i
+apt-get update
+apt-get install mosquitto
+apt-get install mosquitto-clients
+ex 
+mosquitto_pub ?d ?t armtronix_mqtt ?m gHello armtronixh
+mosquitto_sub ?d ?t armtronix_mqtt
+
+mysql
+sudo apt-get install mysql-server mysql-client mysql-commonsudo apt-get install mysql-server mysql-client mysql-common
+mysql_secure_installation
+
+opencv
+sudo apt-get install libopencv-dev python-opencv
+pip intall opencv-python
+pip3 install opencv-python

@@ -1,0 +1,21 @@
+{
+  "name": "nodejstutorial",
+  "version": "1.0.0",
+  "main": "helloworld.js",
+  "dependencies": {
+    "connect": "^3.6.5",
+    "eslint": "^4.17.0",
+    "express": "^4.16.2",
+    "typescript": "^2.7.1"
+  },
+  "devDependencies": {
+    "@types/node": "^9.4.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "keywords": [],
+  "description": ""
+}

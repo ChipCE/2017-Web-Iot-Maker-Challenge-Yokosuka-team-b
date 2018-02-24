@@ -1,0 +1,14 @@
+//depend
+npm install -g express-generator
+npm install ejs
+
+//init
+express --ejs ProjectName
+cd ProjectName
+npm install
+
+//run
+npm start
+
+//opt
+app.set('view engine', 'ejs');
