@@ -30,13 +30,13 @@ apt-get update
 apt-get install mosquitto
 apt-get install mosquitto-clients
 ex 
-mosquitto_pub ?d ?t armtronix_mqtt ?m ÅgHello armtronixÅh
+mosquitto_pub ?d ?t armtronix_mqtt ?m ¬ÅgHello armtronix¬Åh
 mosquitto_sub ?d ?t armtronix_mqtt
 
 mysql
-sudo apt-get install mysql-server mysql-client mysql-commonsudo apt-get install mysql-server mysql-client mysql-common
-mysql_secure_installation
-
+sudo apt-get install mysql-server mysql-client mysql-common
+sudo mysql_secure_installation
+GRANT ALL PRIVILEGES ON *.* TO 'username'@'localhost' IDENTIFIED BY 'password'
 opencv
 sudo apt-get install libopencv-dev python-opencv
 pip intall opencv-python
