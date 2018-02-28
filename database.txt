@@ -1,30 +1,10 @@
 //login
 mysql -u teamb -p
+password
 
 //データベース作成
 CREATE DATABASE TrainDB;
 use TrainDB
-
-//テーブル作成
-CREATE TABLE TrainLog (
-id int not null auto_increment, 
-arrivalTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-people int not null, 
-temperature int not null,
-humidity int not null,
-cabNumber int not null,
-station varchar(64) not null,
-PRIMARY KEY (id)
-);
-
-
-//データ入力
-INSERT INTO TrainLog(people,temperature,humidity,cabNumber,station)
-VALUES(12,27,64,2,'Shioiri');
-
-
-//データ読み取る
-select * from TrainLog;
 
 ----------------------------------------------------------------------------------------
 
