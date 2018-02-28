@@ -25,3 +25,32 @@ VALUES(12,27,64,2,'Shioiri');
 
 //データ読み取る
 select * from TrainLog;
+
+----------------------------------------------------------------------------------------
+
+
+//古いテーブルを消す
+drop table TrainLog;
+
+//新しいを作る
+CREATE TABLE TrainLog (
+id int not null auto_increment, 
+arrivalTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+doorNumber int not null,
+inCounter int not null,
+outCounter int not null,
+people int not null, 
+temperature int not null,
+humidity int not null,
+cabNumber int not null,
+station varchar(64) not null,
+PRIMARY KEY (id)
+);
+
+
+//データ入力
+INSERT INTO TrainLog(doorNumber,inCounter,outCounter,people,temperature,humidity,cabNumber,station)
+VALUES(1,3,4,12,27,64,2,'Shioiri');
+
+//データ読み取る
+select * from TrainLog;
