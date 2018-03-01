@@ -29,8 +29,7 @@ def testIntersectionOut(x, y):
 
     return False
 
-# camera = cv2.VideoCapture("test2.mp4")
-camera = cv2.VideoCapture(0)
+camera = cv2.VideoCapture("test2.mp4")
 
 firstFrame = None
 
