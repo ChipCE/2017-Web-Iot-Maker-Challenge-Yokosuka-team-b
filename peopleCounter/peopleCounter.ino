@@ -86,7 +86,7 @@ int needSendData()
 
 void sendData()
 {
-  char str[200];
+  char str[270];
   dataJson.printTo(str);
   Serial.println();
   Serial.print(str);
@@ -121,7 +121,8 @@ void callback(char *topic, byte *payload, unsigned int length)
   if (message == "reset")
   {
     initData();
-    Serial.println("All data will be reset!.");
+    Serial.println("Counter data will be reset!.");
+    sendData();
   }
 }
 
@@ -345,5 +346,4 @@ void loop()
     sendData();
   }
 
-  delay(5000);
 }
