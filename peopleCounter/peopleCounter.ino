@@ -26,17 +26,19 @@ char mqtt_sub_topic[64] = "sub-topic";
 char mqtt_pub_topic[64] = "pub-topic";
 char mqtt_id[32] = "PeopleCounter_01";
 //version
-char version[32] = "Ver 1.00b";
+char version[32] = "Ver 1.2";
 //flag for saving data
 bool shouldSaveConfig = false;
 //time interval to send mqtt
 #define INTERVAL 10000
 //last send
 unsigned long lastSend = millis();
-//sensor delay
+//sensor the space to trigger ultrasonic sensor
 #define THRESHOLD 30
-#define SPACETIME 500
-#define LOOPDELAY 500
+//delay after each trigger
+#define LOOPDELAY 1000
+//time out for imcomplete trigger
+#define TIMEOUT 10000
 
 //-------------------------SYSTEM CONTROLLER--------------------------------------
 WiFiClient espClient;
@@ -132,11 +134,17 @@ void callback(char *topic, byte *payload, unsigned int length)
   Serial.print("], ");
   Serial.println(message);
 
-  if (message == "reset")
+  if (message == "reset-data")
   {
     initData();
-    Serial.println("Counter data will be reset!.");
+    Serial.println("# Counter data will be reset!.");
     sendData();
+  }
+
+  if(message == "force-config")
+  {
+    Serial.println("# Entering AP mode ...");
+    WiFi.disconnect();
   }
 }
 
@@ -215,17 +223,17 @@ void setup()
 
   Serial.begin(115200);
   Serial.println();
-  Serial.println("Startingup....");
+  Serial.println("# Startingup....");
 
   WiFiManager wifiManager;
-  WiFi.disconnect();
+  //WiFi.disconnect();
   //reset ap and SPIFFS
   if (digitalRead(RESETPIN) == HIGH)
   {
     WiFi.disconnect();
-    Serial.println("# Reset Ap setting ...");
-    wifiManager.resetSettings();
-    SPIFFS.format();
+    Serial.println("# Entering AP mode ...");
+    //wifiManager.resetSettings();
+    //SPIFFS.format();
   }
 
   //parse version infor to portal
@@ -305,7 +313,7 @@ void setup()
   wifiManager.addParameter(&custom_mqtt_pub_topic);
   wifiManager.addParameter(&custom_mqtt_id);
 
-  if (!wifiManager.autoConnect("PeopleCounter_v1", "password"))
+  if (!wifiManager.autoConnect("PeopleCounter_v1.2", "password"))
   {
     Serial.println("# Failed to connect and hit timeout");
     delay(3000);
@@ -405,6 +413,8 @@ void reconnect()
 
 void loop()
 {
+  int delayFlag = 0;
+
   //MQTT connect
   if (!client.connected())
   {
@@ -420,22 +430,56 @@ void loop()
   {
     if (s0)
     {
-      inCounter++;
-      delay(SPACETIME);
-      //wait for unblock
-      while (readUltrasonic(0) || readUltrasonic(1))
+      Serial.println("# Debug : IN triggered");
+      //set star time out
+      unsigned long strigTime = millis();
+
+       //wait for other sensor trigger
+      while (!readUltrasonic(1) != 0 && (millis() - strigTime < TIMEOUT))
         ;
+      //and wait for it out of range
+      while (readUltrasonic(1) == 1 && (millis() - strigTime < TIMEOUT))
+        ;
+
+      //check TIMEOUT
+      if (millis() - strigTime < TIMEOUT)
+      {
+        Serial.println("# Debug : IN ++");
+        inCounter++;
+        delayFlag = 1;
+      }
+      else
+        Serial.println("# Debug : IN - TIMEOUT");
     }
     else if (s1)
     {
-      outCounter++;
-      delay(SPACETIME);
-      //wait for unblock
-      while (readUltrasonic(0) || readUltrasonic(1))
+      Serial.println("# Debug : OUT triggered");
+      //set star time out
+      unsigned long strigTime = millis();
+
+      //wait for other sensor trigger
+      while (!readUltrasonic(0) != 0 && (millis() - strigTime < TIMEOUT))
         ;
+      //and wait for it out of range
+      while (readUltrasonic(0) == 1 && (millis() - strigTime < TIMEOUT))
+        ;
+
+      //check TIMEOUT
+      if (millis() - strigTime < TIMEOUT)
+      {
+        Serial.println("# Debug : OUT ++");
+        outCounter++;
+        delayFlag = 1;
+      }
+      else
+        Serial.println("# Debug : OUT - TIMEOUT");
     }
   }
 
+  //delay if needed
+  if (delayFlag)
+    delay(LOOPDELAY);
+  
   //publish code goes here
   if (needSendData())
   {
