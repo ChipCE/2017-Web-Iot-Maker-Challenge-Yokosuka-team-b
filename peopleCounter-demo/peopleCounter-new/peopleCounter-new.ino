@@ -1,18 +1,13 @@
-#include <DHT_U.h>
-#include <DHT.h>
+#include <DHTesp.h>
 
+DHTesp sensor;
+const int sensorPin = 14;
 
+const int trig1 = 5;
+const int echo1 = 4;
 
-#define DHTPIN 8
-#define DHTTYPE DHT11
-DHT_Unified sensor(DHTPIN, DHTTYPE);
-
-
-const int trig1 = 2;
-const int echo1 = 3;
-
-const int trig2 = 6;
-const int echo2 = 7;
+const int trig2 = 13;
+const int echo2 = 12;
 
 int in = 0;
 int out = 0;
@@ -55,9 +50,42 @@ int readUltrasonic(int mode)
       return 1;
     return 0;
   }
-  return 0;
+  return -1;
 }
 
+
+long debugUltrasonic(int mode)
+{
+  if(mode==0)
+  {
+    digitalWrite(trig1, LOW);
+    delayMicroseconds(2);
+    // Sets the trigPin on HIGH state for 10 micro seconds
+     digitalWrite(trig1, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(trig1, LOW);
+    // Reads the echoPin, returns the sound wave travel time in microseconds
+    long  duration = pulseIn(echo1, HIGH);
+    //calc the distance in cm 
+    long distance = microsecondsToCentimeters(duration);
+    return distance;
+  }
+  else if(mode==1)
+  {
+    digitalWrite(trig2, LOW);
+    delayMicroseconds(2);
+    // Sets the trigPin on HIGH state for 10 micro seconds
+     digitalWrite(trig2, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(trig2, LOW);
+    // Reads the echoPin, returns the sound wave travel time in microseconds
+    long  duration = pulseIn(echo2, HIGH);
+    //calc the distance in cm 
+    long distance = microsecondsToCentimeters(duration);
+    return distance;
+  }
+  return -1;
+}
 
 long microsecondsToCentimeters(long microseconds)
 {
@@ -69,38 +97,15 @@ long microsecondsToCentimeters(long microseconds)
 
 void readSensor()
 {
-  sensors_event_t event;  
+  delay(sensor.getMinimumSamplingPeriod());
 
-  //read temp
-  sensor.temperature().getEvent(&event);
-
-  //check err
-  if (isnan(event.temperature)) 
-  {
-    Serial.println("Error reading temperature!");
-  }
-  else 
-  {
-    Serial.print("Temperature: ");
-    Serial.print(event.temperature);
-    Serial.println(" *C");
-  }
-  
-  // Get humidity event and print its value.
-  sensor.humidity().getEvent(&event);
-  //check err
-  if (isnan(event.relative_humidity)) 
-  {
-    Serial.println("Error reading humidity!");
-  }
-  else 
-  {
-    Serial.print("Humidity: ");
-    Serial.print(event.relative_humidity);
-    Serial.println("%");
-  }
-  int testVal = (int)event.relative_humidity;
-  Serial.println(testVal);
+  float humidityVal = sensor.getHumidity();
+  float temperatureVal = sensor.getTemperature();
+  Serial.print("\t");
+  Serial.print(humidityVal, 1);
+  Serial.print("\t\t");
+  Serial.print(temperatureVal, 1);
+  Serial.println();
 }
 
 
@@ -114,12 +119,13 @@ void setup()
     pinMode(echo1,INPUT);
     pinMode(echo2,INPUT);
 
-    sensor.begin();
+    sensor.setup(sensorPin);
 }
 
 
 void loop()
 {
+
     int s0 = readUltrasonic(0);
     int s1 = readUltrasonic(1);
 
@@ -156,8 +162,6 @@ void loop()
         readSensor();
     }
   delay(LOOPDELAY);
-
-  
 
   
 }

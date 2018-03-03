@@ -5,10 +5,16 @@
 #include <WiFiManagerMod.h>
 #include <ArduinoJson.h>
 #include <PubSubClient.h>
+#include <DHTesp.h>
 
 //------------------------PIN SETUP-----------------------------------------------
-//reset pin , for reset setting .pull up
-#define RESETPIN 14
+//reset pin , for reset setting .pull down
+#define RESETPIN 15
+#define SEN 14
+#define TRIG1 5
+#define ECHO1 4
+#define TRIG2 13
+#define ECHO2 12
 
 //-----------------------SYSTEM CONFIG--------------------------------------------
 //default values
@@ -27,10 +33,15 @@ bool shouldSaveConfig = false;
 #define INTERVAL 10000
 //last send
 unsigned long lastSend = millis();
+//sensor delay
+#define THRESHOLD 30
+#define SPACETIME 500
+#define LOOPDELAY 500
 
 //-------------------------SYSTEM CONTROLLER--------------------------------------
 WiFiClient espClient;
 PubSubClient client(espClient);
+DHTesp sensor;
 
 //-------------------------JSON DATA----------------------------------------------
 // Use arduinojson.org/assistant to compute the capacity.
@@ -44,13 +55,13 @@ int people;
 float temperature;
 float humidity;
 int cabNumber;
-char station[64] = "Hemi";
+char station[64] = "Shioiri";
 
 //---------------------------------------------------------------------------------
 void initData()
 {
   //init data
-  doorNumber = 0;
+  doorNumber = 1;
   inCounter = 0;
   outCounter = 0;
   people = 0;
@@ -63,6 +74,7 @@ void initData()
 
 void updateJson()
 {
+  people = inCounter - outCounter;
   dataJson["doorNumber"] = doorNumber;
   dataJson["inCounter"] = inCounter;
   dataJson["outCounter"] = outCounter;
@@ -73,12 +85,11 @@ void updateJson()
   dataJson["station"] = station;
 }
 
-
 int needSendData()
 {
-  if( millis()-lastSend >=INTERVAL)
+  if (millis() - lastSend >= INTERVAL)
   {
-    lastSend =millis();
+    lastSend = millis();
     return 1;
   }
   return 0;
@@ -86,11 +97,14 @@ int needSendData()
 
 void sendData()
 {
-  char str[270];
+  char str[256];
   dataJson.printTo(str);
-  Serial.println();
-  Serial.print(str);
+  
   client.publish(mqtt_pub_topic, str);
+  Serial.println();
+  Serial.print("Send to :"); 
+  Serial.print(mqtt_pub_topic);
+  Serial.print(str);
 }
 
 //read humidity and temperature
@@ -126,12 +140,77 @@ void callback(char *topic, byte *payload, unsigned int length)
   }
 }
 
+long microsecondsToCentimeters(long microseconds)
+{
+  // The speed of sound is 340 m/s or 29 microseconds per centimeter.
+  // The ping travels out and back, so to find the distance of the object we
+  // take half of the distance travelled.
+  return microseconds / 29 / 2;
+}
+
+int readUltrasonic(int mode)
+{
+  if (mode == 0)
+  {
+    digitalWrite(TRIG1, LOW);
+    delayMicroseconds(2);
+    // Sets the trigPin on HIGH state for 10 micro seconds
+    digitalWrite(TRIG1, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(TRIG1, LOW);
+    // Reads the echoPin, returns the sound wave travel time in microseconds
+    long duration = pulseIn(ECHO1, HIGH);
+    //calc the distance in cm
+    long distance = microsecondsToCentimeters(duration);
+    if (distance <= THRESHOLD)
+      return 1;
+    return 0;
+  }
+  else if (mode == 1)
+  {
+    digitalWrite(TRIG2, LOW);
+    delayMicroseconds(2);
+    // Sets the trigPin on HIGH state for 10 micro seconds
+    digitalWrite(TRIG2, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(TRIG2, LOW);
+    // Reads the echoPin, returns the sound wave travel time in microseconds
+    long duration = pulseIn(ECHO2, HIGH);
+    //calc the distance in cm
+    long distance = microsecondsToCentimeters(duration);
+    if (distance <= THRESHOLD)
+      return 1;
+    return 0;
+  }
+  return -1;
+}
+
+void readSensor()
+{
+  delay(sensor.getMinimumSamplingPeriod());
+
+  float humidityVal = sensor.getHumidity();
+  float temperatureVal = sensor.getTemperature();
+  Serial.println();
+  Serial.print(humidityVal, 1);
+  Serial.print("\t\t");
+  Serial.print(temperatureVal, 1);
+  Serial.println();
+  temperature=(int)temperatureVal;
+  humidity=(int)humidityVal;
+}
+
 void setup()
 {
 
   //set mode for reset pin (pull-up)
-  pinMode(RESETPIN, INPUT_PULLUP);
+  pinMode(RESETPIN, INPUT);
+  pinMode(TRIG1, OUTPUT);
+  pinMode(TRIG2, OUTPUT);
+  pinMode(ECHO1, INPUT);
+  pinMode(ECHO2, INPUT);
 
+  sensor.setup(SEN);
   initData();
 
   Serial.begin(115200);
@@ -139,10 +218,11 @@ void setup()
   Serial.println("Startingup....");
 
   WiFiManager wifiManager;
-
+  WiFi.disconnect();
   //reset ap and SPIFFS
-  if (digitalRead(RESETPIN) == LOW)
+  if (digitalRead(RESETPIN) == HIGH)
   {
+    WiFi.disconnect();
     Serial.println("# Reset Ap setting ...");
     wifiManager.resetSettings();
     SPIFFS.format();
@@ -225,7 +305,7 @@ void setup()
   wifiManager.addParameter(&custom_mqtt_pub_topic);
   wifiManager.addParameter(&custom_mqtt_id);
 
-  if (!wifiManager.autoConnect("ESP8266", "password"))
+  if (!wifiManager.autoConnect("PeopleCounter_v1", "password"))
   {
     Serial.println("# Failed to connect and hit timeout");
     delay(3000);
@@ -332,18 +412,38 @@ void loop()
   }
   client.loop();
 
-  //counter sensor code goes here 
+  //counter sensor code goes here
+  int s0 = readUltrasonic(0);
+  int s1 = readUltrasonic(1);
 
+  if (s0 || s1)
+  {
+    if (s0)
+    {
+      inCounter++;
+      delay(SPACETIME);
+      //wait for unblock
+      while (readUltrasonic(0) || readUltrasonic(1))
+        ;
+    }
+    else if (s1)
+    {
+      outCounter++;
+      delay(SPACETIME);
+      //wait for unblock
+      while (readUltrasonic(0) || readUltrasonic(1))
+        ;
+    }
+  }
 
   //publish code goes here
-  if(needSendData())
+  if (needSendData())
   {
     //read lastest hum and temp data
-    readHumAndTemp();
+    readSensor();
     //update sjon data
     updateJson();
     //send it
     sendData();
   }
-
 }
