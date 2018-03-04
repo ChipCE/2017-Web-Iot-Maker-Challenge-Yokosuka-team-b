@@ -34,7 +34,7 @@ bool shouldSaveConfig = false;
 //last send
 unsigned long lastSend = millis();
 //sensor the space to trigger ultrasonic sensor
-#define THRESHOLD 30
+#define THRESHOLD 100
 //delay after each trigger
 #define LOOPDELAY 1000
 //time out for imcomplete trigger
@@ -138,12 +138,14 @@ void callback(char *topic, byte *payload, unsigned int length)
   {
     initData();
     Serial.println("# Counter data will be reset!.");
+    client.publish(mqtt_sub_topic, "# Counter data will be reset!.");
     sendData();
   }
 
   if(message == "force-config")
   {
     Serial.println("# Entering AP mode ...");
+    client.publish(mqtt_sub_topic, "# Entering AP mode ...");
     WiFi.disconnect();
   }
 }
@@ -170,6 +172,8 @@ int readUltrasonic(int mode)
     long duration = pulseIn(ECHO1, HIGH);
     //calc the distance in cm
     long distance = microsecondsToCentimeters(duration);
+    Serial.print("#Debug distance = ");
+    Serial.println(distance);
     if (distance <= THRESHOLD)
       return 1;
     return 0;
@@ -212,7 +216,7 @@ void setup()
 {
 
   //set mode for reset pin (pull-up)
-  pinMode(RESETPIN, INPUT);
+  //pinMode(RESETPIN, INPUT);
   pinMode(TRIG1, OUTPUT);
   pinMode(TRIG2, OUTPUT);
   pinMode(ECHO1, INPUT);
@@ -226,15 +230,15 @@ void setup()
   Serial.println("# Startingup....");
 
   WiFiManager wifiManager;
-  //WiFi.disconnect();
+  WiFi.disconnect();
   //reset ap and SPIFFS
-  if (digitalRead(RESETPIN) == HIGH)
-  {
-    WiFi.disconnect();
-    Serial.println("# Entering AP mode ...");
+  //if (digitalRead(RESETPIN) == HIGH)
+  //{
+  //  WiFi.disconnect();
+  //  Serial.println("# Entering AP mode ...");
     //wifiManager.resetSettings();
     //SPIFFS.format();
-  }
+  //}
 
   //parse version infor to portal
   wifiManager.setVersion(version);
