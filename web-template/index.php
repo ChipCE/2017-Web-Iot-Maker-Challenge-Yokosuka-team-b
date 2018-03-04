@@ -84,12 +84,12 @@
         <div class="row">
             <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="well  text-center">
-                    逸見駅 　　次の電車:特急品川行き　12時17分　　　現在：12時12分　2018年3月3日
+                    逸見駅 　　次の電車:普通品川行き　xx時xx分　　　<?php echo "現在：" .date("h:i:sa")."  "; ?>　<?php echo date("Y/m/d"); ?>
                 </div>
             </div>
         </div>
         <div class="row">
-            <div class="col-md-3 col-sm-4 col-xs-6">
+            <div class="col-md-3 col-sm-4 col-xs-12">
                 <div class="well cab-info">
                     <h4 class="text-center text-primary">1号車</h4>
                     乗客数:
@@ -98,7 +98,7 @@
                     <p>不快指数:<code>No data</code></p>
                 </div>
             </div>
-            <div class="col-md-3 col-sm-4 col-xs-6">
+            <div class="col-md-3 col-sm-4 col-xs-12">
                 <div class="well cab-info">
                     <h4 class="text-center text-primary">2号車</h4>
                     乗客数:
@@ -107,7 +107,7 @@
                     <p>不快指数:<code><?php echo $point; ?></code></p>
                 </div>
             </div>
-            <div class="col-md-3 col-sm-4 col-xs-6">
+            <div class="col-md-3 col-sm-4 col-xs-12">
                 <div class="well cab-info">
                     <h4 class="text-center text-primary">3号車(弱冷房車)</h4>
                     乗客数:
@@ -116,7 +116,7 @@
                     <p>不快指数:<code>No data</code></p>
                 </div>
             </div>
-            <div class="col-md-3 col-sm-4 col-xs-6">
+            <div class="col-md-3 col-sm-4 col-xs-12">
                 <div class="well cab-info">
                     <h4 class="text-center text-primary">4号車</h4>
                     乗客数:
