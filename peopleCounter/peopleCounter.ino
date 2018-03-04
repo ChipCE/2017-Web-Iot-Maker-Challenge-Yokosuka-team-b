@@ -230,7 +230,11 @@ void setup()
   Serial.println("# Startingup....");
 
   WiFiManager wifiManager;
+
+  //disable this because of unstable AP connection
   WiFi.disconnect();
+
+  
   //reset ap and SPIFFS
   //if (digitalRead(RESETPIN) == HIGH)
   //{

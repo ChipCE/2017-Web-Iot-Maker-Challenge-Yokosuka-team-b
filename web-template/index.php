@@ -1,3 +1,40 @@
+<?php
+    $servername = "localhost";
+    $username = "teamb";
+    $password = "password";
+    $dbname = "TrainDB";
+
+    //data from db 
+    $people;
+    $temperature;
+    $humidity;
+    $point;
+
+    // Create connection
+    $conn = new mysqli($servername, $username, $password, $dbname);
+    // Check connection
+    if ($conn->connect_error) 
+    {
+        die("Connection failed: " . $conn->connect_error);
+    } 
+
+    $sql = "SELECT * FROM TrainLog WHERE id = (SELECT max(id) from TrainLog)";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) 
+    {
+        // output data of each row
+        if($row = $result->fetch_assoc()) 
+        {
+            $people=$row["people"];
+            $temperature=$row["temperature"];
+            $humidity=$row["humidity"];
+            $point = 0.81 * $temperature + 0.01 * $humidity * (0.99 * $temperature - 14.3) + 46.3;
+        }
+    } 
+    $conn->close();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -54,26 +91,38 @@
         <div class="row">
             <div class="col-md-3 col-sm-4 col-xs-6">
                 <div class="well cab-info">
-                    <h4 class="text-center text-primary">1号車(弱冷房車)</h4>
+                    <h4 class="text-center text-primary">1号車</h4>
                     乗客数:
-                    <h2 class="text-right">112/60</h2>
-                    <p>温度:<code>32</code> &nbsp; &nbsp;  湿度:<code>75</code></p>
-                    <p>不快指数:<code>63.6</code></p>
+                    <h2 class="text-right">No data /52</h2>
+                    <p>温度:<code>No data</code> &nbsp; &nbsp;  湿度:<code>No Data</code></p>
+                    <p>不快指数:<code>No data</code></p>
                 </div>
             </div>
             <div class="col-md-3 col-sm-4 col-xs-6">
                 <div class="well cab-info">
-                    No data
+                    <h4 class="text-center text-primary">2号車</h4>
+                    乗客数:
+                    <h2 class="text-right"><?php echo $people; ?>/52</h2>
+                    <p>温度:<code><?php echo $temperature; ?></code> &nbsp; &nbsp;  湿度:<code><?php echo $humidity; ?></code></p>
+                    <p>不快指数:<code><?php echo $point; ?></code></p>
                 </div>
             </div>
             <div class="col-md-3 col-sm-4 col-xs-6">
                 <div class="well cab-info">
-                    No data
+                    <h4 class="text-center text-primary">3号車(弱冷房車)</h4>
+                    乗客数:
+                    <h2 class="text-right">No data /52</h2>
+                    <p>温度:<code>No data</code> &nbsp; &nbsp;  湿度:<code>No Data</code></p>
+                    <p>不快指数:<code>No data</code></p>
                 </div>
             </div>
             <div class="col-md-3 col-sm-4 col-xs-6">
                 <div class="well cab-info">
-                    No data
+                    <h4 class="text-center text-primary">4号車</h4>
+                    乗客数:
+                    <h2 class="text-right">No data /52</h2>
+                    <p>温度:<code>No data</code> &nbsp; &nbsp;  湿度:<code>No Data</code></p>
+                    <p>不快指数:<code>No data</code></p>
                 </div>
             </div>
         </div>
