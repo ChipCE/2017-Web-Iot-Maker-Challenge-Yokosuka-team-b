@@ -1,6 +1,6 @@
 
-#define TRIG1 6
-#define ECHO1 7
+#define TRIG1 11
+#define ECHO1 10
 #define TRIG2 13
 #define ECHO2 12
 
