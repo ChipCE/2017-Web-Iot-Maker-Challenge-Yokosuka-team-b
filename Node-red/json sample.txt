@@ -1,0 +1,1 @@
+{"doorNumber":1,"inCounter":12,"outCounter":7,"people":5,"temperature":17,"humidity":64,"cabNumber":7,"station":"Oppama"}

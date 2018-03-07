@@ -63,17 +63,14 @@
         <div class="container-fluid">
             <!-- logo -->
             <div class="navbar-header">
-                <a href="index.html" class="navbar-brand">Team B</a>
+                <a href="index.html" class="navbar-brand">Team B@横須賀</a>
                 <p class="navbar-text">
-                        電車○○○○○○○○○○○○
+                        車両混雑状況お知らせシステム
                 </p>
             </div>
-            
-
-
             <!-- right menu -->
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="#">About</a></li>
+                <li><a href="https://github.com/ChipTechno/2017-Web-Iot-Maker-Challenge-Yokosuka-team-b">About</a></li>
             </ul>
         </div>
     </nav>
@@ -84,7 +81,9 @@
         <div class="row">
             <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="well  text-center">
-                    逸見駅 　　次の電車:普通品川行き　xx時xx分　　　<?php echo "現在：" .date("h:i:sa")."  "; ?>　<?php echo date("Y/m/d"); ?>
+                    逸見駅<br/>
+                    次の電車:普通品川行き　xx時xx分<br/>
+                    <?php echo "現在：" .date("h:i:sa")."  "; ?>　<?php echo date("Y/m/d"); ?>
                 </div>
             </div>
         </div>
@@ -128,13 +127,6 @@
         </div>
     </div>
     <!-- end main content.............................................-->
-    
-    
-    
-
-    <footer class="footer text-center">
-            <code>Hackathon Team B</code>-<a href="https://webiotmakers.github.io/">Web×IoT メイカーズチャレンジ@横須賀</a>
-    </footer>
             
 </body>
 </html>

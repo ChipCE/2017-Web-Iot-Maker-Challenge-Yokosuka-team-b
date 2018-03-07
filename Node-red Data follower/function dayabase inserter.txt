@@ -1,6 +1,0 @@
-var jsonObj = msg.payload;
-
-var query = "INSERT INTO TrainLog(doorNumber,inCounter,outCounter,people,temperature,humidity,cabNumber,station) VALUES("+jsonObj.doorNumber+","+ jsonObj.inCounter+","+jsonObj.outCounter+","+jsonObj.people+","+jsonObj.temperature+","+jsonObj.humidity+","+jsonObj.cabNumber+",'"+jsonObj.station+"');";
-msg.topic=query;
-msg.payload="insert data";
-return msg;
