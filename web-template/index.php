@@ -81,9 +81,9 @@
         <div class="row">
             <div class="col-md-12 col-sm-12 col-xs-12">
                 <div class="well  text-center">
-                    逸見駅<br/>
-                    次の電車:普通品川行き　xx時xx分<br/>
-                    <?php echo "現在：" .date("h:i:sa")."  "; ?>　<?php echo date("Y/m/d"); ?>
+ 逸見駅 <br/>
+次の電車:普通品川行き　xx時xx分<br/>
+<div id="cTime"></div>
                 </div>
             </div>
         </div>
@@ -98,12 +98,9 @@
                 </div>
             </div>
             <div class="col-md-3 col-sm-4 col-xs-12">
-                <div class="well cab-info">
-                    <h4 class="text-center text-primary">2号車</h4>
-                    乗客数:
-                    <h2 class="text-right"><?php echo $people; ?>/52</h2>
-                    <p>温度:<code><?php echo $temperature; ?></code> &nbsp; &nbsp;  湿度:<code><?php echo $humidity; ?></code></p>
-                    <p>不快指数:<code><?php echo $point; ?></code></p>
+                <div class="well cab-info" id="trainStat">
+                    
+
                 </div>
             </div>
             <div class="col-md-3 col-sm-4 col-xs-12">

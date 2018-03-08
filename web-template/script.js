@@ -19,3 +19,14 @@ $(window).scroll(function()
     }
 });
 
+var auto_refresh = setInterval(
+function ()
+{
+$('#trainStat').load('trainStatus.php').fadeIn("slow");
+}, 1000);
+
+var auto_refresh_time = setInterval(
+function ()
+{
+$('#cTime').load('timer.php').fadeIn("slow");
+}, 1000);

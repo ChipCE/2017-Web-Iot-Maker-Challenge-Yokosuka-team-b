@@ -1,0 +1,2 @@
+connect TRIGGER and ECHO pin with a 1.8k resistor .
+Trigger pin can use as both trigger and echo (same as 3 pins ultrasonic sensor).
